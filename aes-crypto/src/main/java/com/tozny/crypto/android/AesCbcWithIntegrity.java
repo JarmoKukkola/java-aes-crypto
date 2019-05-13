@@ -20,6 +20,12 @@
  * THE SOFTWARE.
  *
  * Created by Isaac Potoczny-Jones on 11/12/14.
+ * Modified by Jarmo Kukkola on 25/4/19
+ *
+ * Changes:
+ * AES_KEY_LENGTH_BITS is changed to 256 to maximize security against Quantum Computers.
+ * fixPrng() is changed to public to allow invoking it from elsewhere
+ * PBE_ITERATION_COUNT is increased from 10000 to 100000 to make password derivation safer
  */
 
 package com.tozny.crypto.android;
@@ -70,9 +76,9 @@ public class AesCbcWithIntegrity {
 
     private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private static final String CIPHER = "AES";
-    private static final int AES_KEY_LENGTH_BITS = 128;
+    private static final int AES_KEY_LENGTH_BITS = 256;
     private static final int IV_LENGTH_BYTES = 16;
-    private static final int PBE_ITERATION_COUNT = 10000;
+    private static final int PBE_ITERATION_COUNT = 100000;
     private static final int PBE_SALT_LENGTH_BITS = AES_KEY_LENGTH_BITS; // same size as key output
     private static final String PBE_ALGORITHM = "PBKDF2WithHmacSHA1";
 
@@ -297,7 +303,7 @@ public class AesCbcWithIntegrity {
      * Ensures that the PRNG is fixed. Should be used before generating any keys.
      * Will only run once, and every subsequent call should return immediately.
      */
-    private static void fixPrng() {
+    public static void fixPrng() {
         if (!prngFixed.get()) {
             synchronized (PrngFixes.class) {
                 if (!prngFixed.get()) {
